@@ -15,10 +15,10 @@
                 <div class="card-content">
                   <span class="card-title">Todo List</span>
                   <div class="row">
-                    <form class="col 12">
+                    <form class="col 12" method="post" action="/">
                         <div class="row">
                             <div class="input-field col s12">
-                                <input placeholder="Task" id="task" type="text">
+                                <input placeholder="Task" id="task" type="text" name="task">
                                 <label for="task">Insert Task</label>
                             </div>
                         </div>
@@ -28,7 +28,6 @@
                 </div>
                 <div class="card-action">
                   <ul class="collection">
-                    <% console.log(tasks) %>
                     <% tasks.forEach((task) => { %>
                         <li class="collection-item"><%= task %></li>
                     <% }) %>

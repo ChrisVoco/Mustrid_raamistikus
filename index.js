@@ -16,7 +16,7 @@ const readFile = (filename) => {
                 return;
             }
 
-            const tasks = data.split("\n")
+            const tasks = JSON.parse(data)
             resolve(tasks)
         });
     })
@@ -24,7 +24,7 @@ const readFile = (filename) => {
 
 app.get('/', (req, res) => {
 
-    readFile('./tasks')
+    readFile('./tasks.json')
         .then(tasks => {
             console.log(tasks)
             res.render('index', {tasks: tasks})
@@ -35,17 +35,35 @@ app.use(express.urlencoded({ extended: true}));
 
 app.post('/', (req, res) => {
 
-    readFile('./tasks')
+    readFile('./tasks.json')
         .then(tasks => {
 
-            tasks.push(req.body.task)
-            const data = tasks.join('\n')
+            let index
+            if(tasks.length === 0)
+            {
+                index = 0
+            } else {
+                index = tasks[tasks.length-1].id + 1; 
+            } 
 
-            fs.writeFile('./tasks', data, err => {
+            const newTask = {
+                "id" : index,
+                "task" : req.body.task
+            }
+            console.log(newTask)
+            tasks.push(newTask)
+            console.log(tasks)
+            data = JSON.stringify(tasks, null, 2)
+            console.log(data)
+
+            fs.writeFile('./tasks.json', data, err => {
                 if (err) {
                     console.error(err);
                     return;
+                } else {
+                    console.log("saved")
                 }
+
 
         res.redirect('/')
        }) 

@@ -1,4 +1,3 @@
-const { fileLoader } = require('ejs');
 const express = require('express')
 const app = express()
 const fs = require('fs');
@@ -13,6 +12,7 @@ const readFile = (filename) => {
         fs.readFile(filename, 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
+                reject(err);
                 return;
             }
 
@@ -53,7 +53,7 @@ app.post('/', (req, res) => {
             console.log(newTask)
             tasks.push(newTask)
             console.log(tasks)
-            data = JSON.stringify(tasks, null, 2)
+            const data = JSON.stringify(tasks, null, 2)
             console.log(data)
 
             fs.writeFile('./tasks.json', data, err => {
@@ -64,9 +64,31 @@ app.post('/', (req, res) => {
                     console.log("saved")
                 }
 
+                res.redirect('/')
+            }) 
+        })
+})
 
-        res.redirect('/')
-       }) 
+app.get('/delete-task/:taskId', (req, res) => {
+    let deletedTaskId = parseInt(req.params.taskId)
+    readFile('./tasks.json')
+    .then(tasks => {
+        tasks.forEach((task, index) => {
+            if(task.id === deletedTaskId) {
+                tasks.splice(index, 1)
+            }
+        })
+
+        const data = JSON.stringify(tasks, null, 2)
+
+        fs.writeFile('./tasks.json', data, err => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+
+            res.redirect('/')
+        })
     })
 })
 
